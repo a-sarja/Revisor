@@ -32,7 +32,7 @@ def upload_file():
 
         # Check if the file is already uploaded
         check_record = ddb_client.check_if_file_already_scanned(sha256=sha256_digest)
-        print(str(check_record))
+
         if 'Item' not in check_record:
             s3_client.upload_file(file_path=file_path, name=str(sha256_digest))
 

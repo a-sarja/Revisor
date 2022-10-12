@@ -33,6 +33,6 @@ class AwsDynamoDbClient:
             Key={
                 'id': str(sha256)
             }, AttributesToGet=[
-                'uploaded_date', 'scanned_date', 'report'
+                'uploaded_timestamp', 'scan_completed_timestamp', 'report'
             ]
         )
