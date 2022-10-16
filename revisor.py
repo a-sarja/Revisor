@@ -1,3 +1,4 @@
+import json
 import os
 from flask import Flask, request, jsonify
 import traceback
@@ -68,6 +69,30 @@ def upload_file():
 
 @app.route('/login', methods=['POST'])
 def login():
+    return jsonify({
+        "code": 1000,
+        "message": "Welcome to Revisor - The Next Generation AV Engine!"
+    }), 200
+
+
+@app.route('/register', methods=['POST'])
+def signup():
+
+    if request.method == "POST":
+        input_data = json.loads(request.get_data().decode().strip())
+
+        username = input_data['username']
+        first_name = input_data['firstName']
+        last_name = input_data['lastName']
+        email = input_data['email']
+        date_of_birth = input_data['dateOfBirth']
+
+        if not username or not first_name or not last_name or not email or not date_of_birth:
+            return jsonify({
+                "code": -1001,
+                "message": "Invalid inputs"
+            }), 400
+
     return jsonify({
         "code": 1000,
         "message": "Welcome to Revisor - The Next Generation AV Engine!"

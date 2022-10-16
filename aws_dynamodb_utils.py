@@ -1,6 +1,7 @@
 import datetime
 
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 
 
 class AwsDynamoDbClient:
@@ -23,7 +24,8 @@ class AwsDynamoDbClient:
                 'scan_status': 0,
                 'report': None,
                 'uploaded_by': 'Test',
-                'scan_completed_timestamp': None
+                'scan_completed_timestamp': None,
+                'email_status': 0
             }
         )
 
@@ -36,3 +38,28 @@ class AwsDynamoDbClient:
                 'uploaded_timestamp', 'scan_completed_timestamp', 'report'
             ]
         )
+
+    def signup_user(self, username, first_name, last_name, email, date_of_birth):
+        users_table = self.ddb_object.Table('users')
+        return users_table.put_item(
+            Item={
+                'username': username,
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'date_of_birth': date_of_birth
+            }
+        )
+
+    def check_scan_status(self):
+        user_files_table = self.ddb_object.Table('revisor_files')
+        response = user_files_table.scan(
+            FilterExpression=Attr("scan_status").eq(2)
+            # & Attr('email_status', 0)
+        )
+        if response:
+            return response['Items']
+
+    def update_email_status(self, sha256):
+        user_files_table = self.ddb_object.Table('revisor_files')
+        return
