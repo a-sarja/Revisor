@@ -17,7 +17,6 @@ if __name__ == '__main__':
             reports_to_be_emailed = ddb_object.check_scan_status()
             if reports_to_be_emailed:
                 reports = {}
-
                 for each in reports_to_be_emailed:
                     reports[each['id']] = each['uploaded_by']
 
@@ -27,10 +26,11 @@ if __name__ == '__main__':
                         # Send the email
                         if summary_file_local and csv_file_local:
                             send_scan_result_email(destination_email=str(each_value), summary_filepath=summary_file_local, csv_filepath=csv_file_local)
-
                             # Delete the downloaded files from local as soon as they are sent to the user through emails
                             file_utils.delete_file(filepath=summary_file_local)
                             file_utils.delete_file(filepath=csv_file_local)
+                            # Update the email status to `sent`
+                            ddb_object.update_email_status(sha256=str(each_key))
 
             print("A batch of emails sent")
             time.sleep(30)  # # Sleeping for sometime to wait for new scan reports uploaded to S3 -> 30 seconds is ideal time

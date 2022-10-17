@@ -23,7 +23,7 @@ class AwsDynamoDbClient:
                 'uploaded_timestamp': str(datetime.datetime.now()),
                 'scan_status': 0,
                 'report': None,
-                'uploaded_by': 'Test',
+                'uploaded_by': 'test@test.test',  # This needs to be updated dynamically
                 'scan_completed_timestamp': None,
                 'email_status': 0
             }
@@ -54,12 +54,20 @@ class AwsDynamoDbClient:
     def check_scan_status(self):
         user_files_table = self.ddb_object.Table('revisor_files')
         response = user_files_table.scan(
-            FilterExpression=Attr("scan_status").eq(2)
-            # & Attr('email_status', 0)
+            FilterExpression=Attr("scan_status").eq(2) & Attr('email_status').eq(0)
         )
         if response:
             return response['Items']
 
     def update_email_status(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
-        return
+        return user_files_table.update_item(
+            Key={
+                'id': sha256
+            },
+            UpdateExpression="SET email_status=:e",
+            ExpressionAttributeValues={
+                ':e': 2
+            },
+            ReturnValues="UPDATED_NEW"
+        )
