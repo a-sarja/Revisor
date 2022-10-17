@@ -27,7 +27,7 @@ def send_scan_result_email(destination_email, summary_filepath, csv_filepath):
     msg_body += "\n\nThanks,\n Team !Revisor"
 
     sender_email = "<EMAIL>"
-    password = "<PASSWORD>"   # Keep your app password here in case of gmail - not the usual password
+    password = "<APP_PASSWORD>"   # Keep your app password here in case of gmail - not the usual password
     receiver_email = str(destination_email)
 
     # Create a multipart message and set headers
@@ -35,7 +35,7 @@ def send_scan_result_email(destination_email, summary_filepath, csv_filepath):
     message["From"] = sender_email
     message["To"] = receiver_email
     message["Subject"] = subject
-    message["Bcc"] = receiver_email  # Recommended for mass emails
+    # message["Bcc"] = receiver_email  # Recommended for mass emails
 
     # Add body to email
     message.attach(MIMEText(msg_body, "plain"))
