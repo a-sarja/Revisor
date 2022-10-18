@@ -4,7 +4,7 @@ import time
 import csv
 import os
 
-vt_api_key = 'a5472f3bf8cb8e67ed3829028d299b709d29286c4d862f67584617c0dc7bce43'
+vt_api_key = ''
 
 class VirusTotalClient:
 
