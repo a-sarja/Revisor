@@ -14,7 +14,7 @@ class AwsDynamoDbClient:
     def get_dynamodb_client(self):
         return boto3.resource(self._aws_client, self._region)
 
-    def update_files_table(self, s3_path, sha256):
+    def add_file(self, s3_path, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.put_item(
             Item={
@@ -29,6 +29,7 @@ class AwsDynamoDbClient:
             }
         )
 
+    #why do we need this if we have check file scan status
     def check_if_file_already_scanned(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.get_item(
@@ -71,3 +72,32 @@ class AwsDynamoDbClient:
             },
             ReturnValues="UPDATED_NEW"
         )
+    
+    def update_scan_status(self, file_id, status):
+        user_files_table = self.ddb_object.Table('revisor_files')
+
+        return user_files_table.update_item(
+            Key = {'id' : file_id},
+            UpdateExpression="set scan_status = :s",
+            ExpressionAttributeValues={
+                ':s': status
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+
+    def get_unscanned_files(self):
+        user_files_table = self.ddb_object.Table('revisor_files')
+        response = user_files_table.query(
+            IndexName = 'scan_status-index',
+            KeyConditionExpression=Key('scan_status').eq(0)
+        )
+        return response['Items']
+    
+    def get_file_details(self, sha256):
+        user_files_table = self.ddb_object.Table('revisor_files')
+        response = user_files_table.get_item(Key=
+            {
+                'id' : sha256
+            }
+        )
+        return response['Item']
