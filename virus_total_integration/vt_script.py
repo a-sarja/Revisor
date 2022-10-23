@@ -1,11 +1,24 @@
 import os
-from aws_s3_utils import *
-from aws_dynamodb_utils import *
-from vt_apis_class import *
+import sys
+curdir = os.getcwd()
+revisor_path = curdir.replace("/virus_total_integration", "")
+#print(curdir)
+#print(revisor_path)
+
+sys.path.insert(0, revisor_path)
+
+from backend.aws_s3_utils import *
+from backend.aws_dynamodb_utils import *
+from vt_client import *
 
 vt_api = VirusTotalClient()
 aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
+
+
+if vt_api_key == '':
+    print("Enter a valid API key in the VT client file")
+    exit(0)
 
 while(1):
     unscanned_files = aws_ddb.get_unscanned_files()
