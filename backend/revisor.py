@@ -31,6 +31,9 @@ def upload_file():
         file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
         sha256_digest = calculate_hash(file_path=file_path)
 
+        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename), zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
+            file_path = LOCAL_TEMP_FOLDER + str(sha256_digest) + ".zip"
+
         # Check if the file is already uploaded
         check_record = ddb_client.check_if_file_already_scanned(sha256=sha256_digest)
         if 'Item' not in check_record:
