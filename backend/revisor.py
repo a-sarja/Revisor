@@ -39,8 +39,6 @@ def upload_file():
             # After successful upload, delete it from local - Make it async later (Maybe have a cron job that runs periodically to delete all the files from the LOCAL_TEMP_PATH)
             file_utils.delete_file(filepath=file_path)
 
-            s3_path = "https://" + str(s3_client.bucket_name) + ".s3.amazonaws.com/" + str(sha256_digest).lower()
-
             # Create/Update the revisor_files table on dynamodb
             ddb_client.add_file(sha256=str(sha256_digest))
             return jsonify({
