@@ -14,29 +14,26 @@ class AwsDynamoDbClient:
     def get_dynamodb_client(self):
         return boto3.resource(self._aws_client, self._region)
 
-    def add_file(self, s3_path, sha256):
+    def add_file(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.put_item(
             Item={
                 'id': sha256,
-                's3_url': s3_path,
                 'uploaded_timestamp': str(datetime.datetime.now()),
                 'scan_status': 0,
-                'report': None,
-                'uploaded_by': 'test@test.test',  # This needs to be updated dynamically
+                'uploaded_by': 'sarja.a@northeastern.edu',  # This needs to be updated dynamically
                 'scan_completed_timestamp': None,
                 'email_status': 0
             }
         )
 
-    #why do we need this if we have check file scan status
     def check_if_file_already_scanned(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.get_item(
             Key={
                 'id': str(sha256)
             }, AttributesToGet=[
-                'uploaded_timestamp', 'scan_completed_timestamp', 'report'
+                'uploaded_timestamp', 'scan_completed_timestamp', 'uploaded_by'
             ]
         )
 
@@ -52,7 +49,7 @@ class AwsDynamoDbClient:
             }
         )
 
-    def check_scan_status(self):
+    def fetch_data_to_send_email(self):
         user_files_table = self.ddb_object.Table('revisor_files')
         response = user_files_table.scan(
             FilterExpression=Attr("scan_status").eq(2) & Attr('email_status').eq(0)
@@ -72,12 +69,12 @@ class AwsDynamoDbClient:
             },
             ReturnValues="UPDATED_NEW"
         )
-    
+
     def update_scan_status(self, file_id, status):
         user_files_table = self.ddb_object.Table('revisor_files')
 
         return user_files_table.update_item(
-            Key = {'id' : file_id},
+            Key={'id': file_id},
             UpdateExpression="set scan_status = :s",
             ExpressionAttributeValues={
                 ':s': status
@@ -88,16 +85,16 @@ class AwsDynamoDbClient:
     def get_unscanned_files(self):
         user_files_table = self.ddb_object.Table('revisor_files')
         response = user_files_table.query(
-            IndexName = 'scan_status-index',
+            IndexName='scan_status-index',
             KeyConditionExpression=Key('scan_status').eq(0)
         )
         return response['Items']
-    
+
     def get_file_details(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')
-        response = user_files_table.get_item(Key=
-            {
-                'id' : sha256
+        response = user_files_table.get_item(
+            Key={
+                'id': sha256
             }
         )
         return response['Item']
