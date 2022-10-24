@@ -31,20 +31,19 @@ def upload_file():
         file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
         sha256_digest = calculate_hash(file_path=file_path)
 
+        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename), zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
+            file_path = LOCAL_TEMP_FOLDER + str(sha256_digest) + ".zip"
+
         # Check if the file is already uploaded
         check_record = ddb_client.check_if_file_already_scanned(sha256=sha256_digest)
-
         if 'Item' not in check_record:
-            s3_client.upload_file(file_path=file_path, name=str(sha256_digest))
+            s3_client.upload_file(file_path=file_path, name=str(sha256_digest) + "/" + str(sha256_digest))
 
             # After successful upload, delete it from local - Make it async later (Maybe have a cron job that runs periodically to delete all the files from the LOCAL_TEMP_PATH)
             file_utils.delete_file(filepath=file_path)
 
-            s3_path = "https://" + str(s3_client.bucket_name) + ".s3.amazonaws.com/" + str(sha256_digest).lower()
-
             # Create/Update the revisor_files table on dynamodb
-            ddb_client.update_files_table(s3_path=s3_path, sha256=str(sha256_digest))
-
+            ddb_client.add_file(sha256=str(sha256_digest))
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
