@@ -14,7 +14,7 @@ form.addEventListener('submit', function(event) {
   // Create new formData object then append file
   const payload = new FormData();
   payload.append('user_file', f);
-  payload.append('user_email', uploadEmail);
+  payload.append('user_email', uploadEmail.value);
  
   // POST with Fetch API
   fetch('http://localhost:5000/upload-file', {
