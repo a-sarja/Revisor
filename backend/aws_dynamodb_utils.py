@@ -1,7 +1,7 @@
 import datetime
 
 import boto3
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr
 
 
 class AwsDynamoDbClient:
@@ -14,14 +14,16 @@ class AwsDynamoDbClient:
     def get_dynamodb_client(self):
         return boto3.resource(self._aws_client, self._region)
 
-    def add_file(self, sha256):
+    def add_file(self, sha256, user_email):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.put_item(
             Item={
                 'id': sha256,
                 'uploaded_timestamp': str(datetime.datetime.now()),
                 'scan_status': 0,
-                'uploaded_by': 'sarja.a@northeastern.edu',  # This needs to be updated dynamically
+                'clamav_scan_status': 0,
+                'yara_av_scan_status': 0,
+                'uploaded_by': str(user_email),
                 'scan_completed_timestamp': None,
                 'email_status': 0
             }
@@ -70,25 +72,37 @@ class AwsDynamoDbClient:
             ReturnValues="UPDATED_NEW"
         )
 
-    def update_scan_status(self, file_id, status):
+    def update_scan_status(self, file_id, status, scan_engine):
+        key_condition_column = 'scan_status'
+        if scan_engine.lower() == 'clamav':
+            key_condition_column = 'clamav_scan_status'
+        elif scan_engine.lower() == 'yara_av':
+            key_condition_column = 'yara_av_scan_status'
+
         user_files_table = self.ddb_object.Table('revisor_files')
 
         return user_files_table.update_item(
             Key={'id': file_id},
-            UpdateExpression="set scan_status = :s",
+            UpdateExpression="set " + str(key_condition_column) + " = :s",
             ExpressionAttributeValues={
                 ':s': status
             },
             ReturnValues="UPDATED_NEW"
         )
 
-    def get_unscanned_files(self):
+    def get_unscanned_files(self, scan_engine):
+        key_condition_column = 'scan_status'
+        if scan_engine.lower() == 'clamav':
+            key_condition_column = 'clamav_scan_status'
+        elif scan_engine.lower() == 'yara_av':
+            key_condition_column = 'yara_av_scan_status'
+
         user_files_table = self.ddb_object.Table('revisor_files')
-        response = user_files_table.query(
-            IndexName='scan_status-index',
-            KeyConditionExpression=Key('scan_status').eq(0)
+        response = user_files_table.scan(
+            FilterExpression=Attr(key_condition_column).eq(0)
         )
-        return response['Items']
+        if response:
+            return response['Items']
 
     def get_file_details(self, sha256):
         user_files_table = self.ddb_object.Table('revisor_files')

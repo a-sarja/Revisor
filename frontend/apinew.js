@@ -10,7 +10,7 @@ form.addEventListener('submit', function(event) {
   const uploadEmail = document.getElementById('exampleInputEmail1');
   // Extract the file (for a single file, always 0 in the list)
   const f = uploadElement.files[0];
-  //const e = uploadEmail.files[0];
+
   // Create new formData object then append file
   const payload = new FormData();
   payload.append('user_file', f);
