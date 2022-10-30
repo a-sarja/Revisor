@@ -31,6 +31,10 @@ def upload_file():
         file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
         sha256_digest = calculate_hash(file_path=file_path)
 
+        # Rename the file to be uploaded to sha256 before uploading to S3
+        file_path = LOCAL_TEMP_FOLDER + str(sha256_digest)
+        os.rename(LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename), file_path)
+
         if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename), zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
             file_path = LOCAL_TEMP_FOLDER + str(sha256_digest) + ".zip"
 

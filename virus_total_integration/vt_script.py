@@ -2,8 +2,6 @@ import os
 import sys
 curdir = os.getcwd()
 revisor_path = curdir.replace("/virus_total_integration", "")
-#print(curdir)
-#print(revisor_path)
 
 sys.path.insert(0, revisor_path)
 
@@ -21,14 +19,15 @@ if vt_api_key == '':
     exit(0)
 
 while(1):
-    unscanned_files = aws_ddb.get_unscanned_files()
+    scan_engine = "virustotal"
+    unscanned_files = aws_ddb.get_unscanned_files(scan_engine=scan_engine)
 
     if unscanned_files:
         print(unscanned_files)
 
         for file in unscanned_files:
             db_file_id = file['id']
-            aws_ddb.update_scan_status(db_file_id, 1)
+            aws_ddb.update_scan_status(db_file_id, 1, scan_engine=scan_engine)
             pwd = os.getcwd()
 
             new_path = pwd + f'/{db_file_id}'
@@ -46,7 +45,7 @@ while(1):
             aws_s3.upload_file(summary_name, summary_name)
             aws_s3.upload_file(results_name, results_name)
 
-            aws_ddb.update_scan_status(db_file_id, 2)
+            aws_ddb.update_scan_status(db_file_id, 2, scan_engine=scan_engine)
     
     else:
         print("No unscanned files found")
