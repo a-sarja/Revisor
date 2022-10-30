@@ -14,7 +14,7 @@ class AwsDynamoDbClient:
     def get_dynamodb_client(self):
         return boto3.resource(self._aws_client, self._region)
 
-    def add_file(self, sha256):
+    def add_file(self, sha256, user_email):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.put_item(
             Item={
@@ -23,7 +23,7 @@ class AwsDynamoDbClient:
                 'scan_status': 0,
                 'clamav_scan_status': 0,
                 'yara_av_scan_status': 0,
-                'uploaded_by': 'sarja.a@northeastern.edu',  # This needs to be updated dynamically
+                'uploaded_by': str(user_email),
                 'scan_completed_timestamp': None,
                 'email_status': 0
             }

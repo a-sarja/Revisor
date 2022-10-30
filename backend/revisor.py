@@ -27,6 +27,13 @@ def upload_file():
         s3_client = AwsS3Client()
 
         file_to_uploaded = request.files['user_file']
+        user_email = request.form.get('user_email')
+        if not file_to_uploaded or not user_email:
+            return jsonify({
+                'code': -1000,
+                'message': 'Invalid input!'
+            }), 400
+
         file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, file_to_uploaded.filename))
         file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
         sha256_digest = calculate_hash(file_path=file_path)
@@ -47,7 +54,7 @@ def upload_file():
             file_utils.delete_file(filepath=file_path)
 
             # Create/Update the revisor_files table on dynamodb
-            ddb_client.add_file(sha256=str(sha256_digest))
+            ddb_client.add_file(sha256=str(sha256_digest), user_email=user_email)
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
