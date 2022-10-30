@@ -61,7 +61,7 @@ class ClamAVEngine:
                 # Upload the report file to S3
                 aws_s3.upload_file(
                     file_path=f'{LOCAL_TEMP_FOLDER}/{db_file_id}{"_ClamAVScan_Report.txt"}',
-                    name=f'{str(db_file_id)}/{"ClamAVScan_Report.txt"}'
+                    name=f'{str(db_file_id)}/{db_file_id}{"_ClamAVScan_Report.txt"}'
                 )
 
                 # Delete files from the local
