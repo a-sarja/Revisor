@@ -39,7 +39,7 @@ def send_scan_result_email(destination_email, vt_scan_local, yara_scan_local, cl
     # Add header as key/value pair to attachment part
     part1.add_header(
         "Content-Disposition",
-        f"attachment; filename= VT_REPORT.txt",
+        f"attachment; filename= VT_REPORT.csv",
     )
 
     # Add YaraAV Scan Report as attachment
@@ -53,7 +53,7 @@ def send_scan_result_email(destination_email, vt_scan_local, yara_scan_local, cl
     # Add header as key/value pair to attachment part
     part2.add_header(
         "Content-Disposition",
-        f"attachment; filename= YARA_AV_REPORT.csv",
+        f"attachment; filename= YARA_AV_KEYWORDS.txt",
     )
 
     # Add ClamAV report as attachment
@@ -67,7 +67,7 @@ def send_scan_result_email(destination_email, vt_scan_local, yara_scan_local, cl
     # Add header as key/value pair to attachment part
     part3.add_header(
         "Content-Disposition",
-        f"attachment; filename= CLAMAV_AV_REPORT.csv",
+        f"attachment; filename= CLAMAV_AV_REPORT.json",
     )
 
     # Add attachments to message and convert message to string

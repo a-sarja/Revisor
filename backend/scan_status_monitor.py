@@ -14,8 +14,8 @@ def download_files(filepath, sha256, s3_obj):
     vt_scan_filename = sha256 + "/" + str(sha256) + "_results.csv"
     vt_scan_local = filepath + str(sha256) + "_results.csv"
 
-    yara_scan_filename = sha256 + "/" + str(sha256) + "yara_results.csv"
-    yara_scan_local = filepath + str(sha256) + "yara_results.csv"
+    yara_scan_filename = sha256 + "/" + str(sha256) + "_yara_keywords.txt"
+    yara_scan_local = filepath + str(sha256) + "yara_results.txt"
 
     clamav_scan_filename = sha256 + "/" + str(sha256) + "_ClamAVScan_Report.txt"
     clamav_scan_local = filepath + str(sha256) + "_ClamAVScan_Report.txt"
