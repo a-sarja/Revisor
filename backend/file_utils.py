@@ -10,6 +10,17 @@ def delete_file(filepath):
     os.remove(path=filepath)
 
 
+def write_file(filename, path, content):
+
+    if os.path.exists(f'{path}/{filename}'):
+        return
+
+    with open(f"{path}/{filename}", "w") as results_fp:
+        results_fp.write(str(content))
+
+    return f'{path}/{filename}'
+
+
 def read_file(filepath):
     if not os.path.exists(filepath):
         return None
@@ -34,12 +45,11 @@ def create_zipfile(folder, source_filename, zip_filename, password):
     return True
 
 
-def unzip_file(folder, target_filename, zip_filename, password):
+def unzip_file(folder, zip_filename, password):
 
     if not os.path.exists(folder + "/" + zip_filename):
         return False
 
     compress_level = 9
-    pyminizip.uncompress(folder + "/" + zip_filename, password, target_filename, compress_level)
+    return pyminizip.uncompress(folder + "/" + zip_filename, password, folder, compress_level)
 
-    return True

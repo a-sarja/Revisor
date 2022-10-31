@@ -7,14 +7,14 @@ form.addEventListener('submit', function(event) {
  
   // Select file upload element
   const uploadElement = document.getElementById('file');
-  const uploadEmail = document.getElementById('email');
+  const uploadEmail = document.getElementById('exampleInputEmail1');
   // Extract the file (for a single file, always 0 in the list)
   const f = uploadElement.files[0];
-  const e = uploadEmail.files[0];
+
   // Create new formData object then append file
   const payload = new FormData();
   payload.append('user_file', f);
-  payload.append('user_email', e);
+  payload.append('user_email', uploadEmail.value);
  
   // POST with Fetch API
   fetch('http://localhost:5000/upload-file', {
