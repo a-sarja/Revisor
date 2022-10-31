@@ -11,14 +11,20 @@ LOCAL_TEMP_FOLDER = "/home/abhiram/Desktop/CY7900/downloaded_files/"  # Change i
 
 def download_files(filepath, sha256, s3_obj):
 
-    remote_csv_filename = sha256 + "/" + str(sha256) + "_results.csv"
-    remote_summary_filename = sha256 + "/" + str(sha256) + "_summary.txt"
-    csv_local = filepath + str(sha256) + "_results.csv"
-    summary_local = filepath + str(sha256) + "_summary.txt"
+    vt_scan_filename = sha256 + "/" + str(sha256) + "_results.csv"
+    vt_scan_local = filepath + str(sha256) + "_results.csv"
 
-    s3_obj.download_file(s3_file_name=remote_csv_filename, local_file_name=csv_local)
-    s3_obj.download_file(s3_file_name=remote_summary_filename, local_file_name=summary_local)
-    return csv_local, summary_local
+    yara_scan_filename = sha256 + "/" + str(sha256) + "yara_results.csv"
+    yara_scan_local = filepath + str(sha256) + "yara_results.csv"
+
+    clamav_scan_filename = sha256 + "/" + str(sha256) + "_ClamAVScan_Report.txt"
+    clamav_scan_local = filepath + str(sha256) + "_ClamAVScan_Report.txt"
+
+    s3_obj.download_file(s3_file_name=vt_scan_filename, local_file_name=vt_scan_local)
+    s3_obj.download_file(s3_file_name=yara_scan_filename, local_file_name=yara_scan_local)
+    s3_obj.download_file(s3_file_name=clamav_scan_filename, local_file_name=clamav_scan_local)
+
+    return vt_scan_local, yara_scan_local, clamav_scan_local
 
 
 if __name__ == '__main__':
@@ -34,19 +40,24 @@ if __name__ == '__main__':
                     reports[each['id']] = each['uploaded_by']
 
                 if reports:
+                    print(str(len(reports)), ' Emails to be sent..')
                     for each_key, each_value in reports.items():
-                        csv_file_local, summary_file_local = download_files(filepath=LOCAL_TEMP_FOLDER, sha256=str(each_key), s3_obj=s3_object)
+
+                        vt_scan_local, yara_scan_local, clamav_scan_local = download_files(filepath=LOCAL_TEMP_FOLDER, sha256=str(each_key), s3_obj=s3_object)
                         # Send the email
-                        if summary_file_local and csv_file_local:
-                            send_scan_result_email(destination_email=str(each_value), summary_filepath=summary_file_local, csv_filepath=csv_file_local)
+                        if clamav_scan_local and yara_scan_local and vt_scan_local:
+                            send_scan_result_email(destination_email=str(each_value), vt_scan_local=vt_scan_local, yara_scan_local=yara_scan_local, clamav_scan_local=clamav_scan_local)
                             # Delete the downloaded files from local as soon as they are sent to the user through emails
-                            file_utils.delete_file(filepath=summary_file_local)
-                            file_utils.delete_file(filepath=csv_file_local)
+                            file_utils.delete_file(filepath=clamav_scan_local)
+                            file_utils.delete_file(filepath=yara_scan_local)
+                            file_utils.delete_file(filepath=vt_scan_local)
+
                             # Update the email status to `sent`
                             ddb_object.update_email_status(sha256=str(each_key))
 
-            print("A batch of emails has been sent")
-            time.sleep(30)  # # Sleeping for sometime to wait for new scan reports uploaded to S3 -> 30 seconds is ideal time
+                    print("A batch of emails has been sent")
+
+            time.sleep(30)  # Sleeping for sometime to wait for new scan reports uploaded to S3 -> 30 seconds is ideal time
 
     except Exception as ex:
         traceback.print_exception(ex)
