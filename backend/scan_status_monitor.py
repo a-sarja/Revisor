@@ -1,3 +1,4 @@
+import os
 import time
 import traceback
 
@@ -6,7 +7,7 @@ from aws_dynamodb_utils import AwsDynamoDbClient
 from aws_s3_utils import AwsS3Client
 from email_utils import send_scan_result_email
 
-LOCAL_TEMP_FOLDER = "/home/abhiram/Desktop/CY7900/downloaded_files/"  # Change it to the /tmp/<revisor> in prod environment
+LOCAL_TEMP_FOLDER = "downloaded_files/"  # Change it to the /tmp/<revisor> in prod environment
 
 
 def download_files(filepath, sha256, s3_obj):
@@ -28,6 +29,10 @@ def download_files(filepath, sha256, s3_obj):
 
 
 if __name__ == '__main__':
+
+    # Create a temporary directory if not exists already
+    if not os.path.exists(LOCAL_TEMP_FOLDER):
+        os.mkdir(LOCAL_TEMP_FOLDER)
 
     ddb_object = AwsDynamoDbClient()
     s3_object = AwsS3Client()
