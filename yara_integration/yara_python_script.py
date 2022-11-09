@@ -1,4 +1,5 @@
 import yara
+import time
 import sys
 import os
 import pathlib
@@ -9,6 +10,7 @@ sys.path.insert(0, revisor_path)
 
 from backend.aws_s3_utils import *
 from backend.aws_dynamodb_utils import *
+from backend.file_utils import *
 
 aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
@@ -34,7 +36,7 @@ for path, currentDirectory, files in os.walk(rules_dir):
 
 while(1):
     #unscanned_files = aws_ddb.get_unscanned_yara_files()
-    unscanned_files = aws_ddb.get_unscanned_files()
+    unscanned_files = aws_ddb.get_unscanned_files('yara_av')
     
 
     if unscanned_files:
@@ -45,7 +47,7 @@ while(1):
 
             db_file_id = file['id']
             #aws_ddb.update_yara_scan_status(db_file_id, 1)
-            aws_ddb.update_scan_status(db_file_id, 1)
+            aws_ddb.update_scan_status(db_file_id, 1, 'yara_av')
 
             pwd = os.getcwd()
 
@@ -55,6 +57,10 @@ while(1):
                 os.makedirs(new_path)
 
             aws_s3.download_file(f'{db_file_id}/{db_file_id}', f'{db_file_id}/{db_file_id}')
+
+            unzip_file(f'{db_file_id}', f'{db_file_id}/{db_file_id}', "CY7900")
+
+            #delete_file(f'{db_file_id}/{db_file_id}')
 
             for rule_file in yara_files:
                 try:
@@ -73,9 +79,10 @@ while(1):
             aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_keywords.txt",f"{db_file_id}/{db_file_id}_yara_keywords.txt")
 
             #aws_ddb.update_yara_scan_status(db_file_id, 2)
-            aws_ddb.update_scan_status(db_file_id, 2)
+            aws_ddb.update_scan_status(db_file_id, 2, 'yara_av')
 
     
     else:
         print("No unscanned files found")
+        time.sleep(60)
         break

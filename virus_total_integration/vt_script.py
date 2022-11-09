@@ -8,6 +8,7 @@ sys.path.insert(0, revisor_path)
 from backend.aws_s3_utils import *
 from backend.aws_dynamodb_utils import *
 from vt_client import *
+from backend.file_utils import *
 
 vt_api = VirusTotalClient()
 aws_s3 = AwsS3Client()
@@ -36,6 +37,8 @@ while(1):
                 os.makedirs(new_path)
 
             aws_s3.download_file(f'{db_file_id}/{db_file_id}', f'{db_file_id}/{db_file_id}')
+
+            unzip_file(f'{db_file_id}', f'{db_file_id}/{db_file_id}', "CY7900")
 
             vt_file_id = vt_api.upload_file(f'{db_file_id}/{db_file_id}')
             print(vt_file_id)

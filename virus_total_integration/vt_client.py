@@ -4,7 +4,7 @@ import time
 import csv
 import os
 
-vt_api_key = ''
+vt_api_key = 'a5472f3bf8cb8e67ed3829028d299b709d29286c4d862f67584617c0dc7bce43'
 
 class VirusTotalClient:
 
@@ -34,7 +34,8 @@ class VirusTotalClient:
             time.sleep(30)
             response = requests.get(url_report, headers=self.headers)
             response_dict = response.json()
-        file_name = file_name = os.path.basename(file_path)
+        
+        file_name = os.path.basename(file_path)
 
         with open(f"{file_name}/{file_name}_summary.txt", "w") as results_fp:    
             results_fp.write(str(response_dict['data']['attributes']['stats']))
