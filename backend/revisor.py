@@ -10,7 +10,7 @@ from utils import calculate_hash
 
 
 app = Flask(__name__)
-LOCAL_TEMP_FOLDER = "/home/abhiram/Desktop/CY7900/upload_files/"  # Change it to the /tmp/<revisor> in prod environment
+LOCAL_TEMP_FOLDER = "upload_files/"
 
 
 @app.route('/upload-file', methods=['POST'])
@@ -119,5 +119,9 @@ def test():
 
 if __name__ == "__main__":
 
+    # Create a temporary directory if not exists already
+    if not os.path.exists(LOCAL_TEMP_FOLDER):
+        os.mkdir(LOCAL_TEMP_FOLDER)
+
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
-    app.run(debug=True, host='127.0.0.1', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
