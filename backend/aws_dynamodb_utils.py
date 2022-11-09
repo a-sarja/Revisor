@@ -54,7 +54,7 @@ class AwsDynamoDbClient:
     def fetch_data_to_send_email(self):
         user_files_table = self.ddb_object.Table('revisor_files')
         response = user_files_table.scan(
-            FilterExpression=Attr("scan_status").eq(2) & Attr('email_status').eq(0)
+            FilterExpression=Attr("scan_status").eq(2) & Attr("yara_av_scan_status").eq(2) & Attr("clamav_scan_status").eq(2) & Attr('email_status').eq(0)
         )
         if response:
             return response['Items']

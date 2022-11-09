@@ -11,14 +11,14 @@ from backend.aws_dynamodb_utils import AwsDynamoDbClient
 from backend.aws_s3_utils import AwsS3Client
 from backend.file_utils import unzip_file, delete_file, write_file
 
-LOCAL_TEMP_FOLDER = "/home/abhiram/Desktop/CY7900/clamav_files"  # Change it to the /tmp/<revisor> in prod environment
+LOCAL_TEMP_FOLDER = "clamav_files/"  # Change it to the /tmp/<revisor> in prod environment
 
 
 class ClamAVEngine:
 
     def __init__(self):
         self.av_name = 'clamav'
-        self.host = 'http://localhost:8080'
+        self.host = 'http://<cra-container>:8080'
         self.url = self.host + '/api/v1/scan'
         self.app_form_key = 'FILE'
 
@@ -71,10 +71,14 @@ class ClamAVEngine:
 
 if __name__ == '__main__':
 
+    # Create a temporary directory if not exists already
+    if not os.path.exists(LOCAL_TEMP_FOLDER):
+        os.mkdir(LOCAL_TEMP_FOLDER)
+
     aws_s3 = AwsS3Client()
     aws_ddb = AwsDynamoDbClient()
 
     while True:
         clamav_engine = ClamAVEngine()
         clamav_engine.clamav_process(aws_ddb=aws_ddb, aws_s3=aws_s3)
-        time.sleep(10)  # Sleep for 10 seconds between scans
+        time.sleep(30)  # Sleep for 30 seconds between scans

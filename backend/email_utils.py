@@ -5,25 +5,13 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import file_utils
 
-
-def send_scan_result_email(destination_email, summary_filepath, csv_filepath):
+def send_scan_result_email(destination_email, vt_scan_local, yara_scan_local, clamav_scan_local):
 
     subject = "YOUR REVISOR SCAN REPORT IS HERE!!!"
-    msg_body = "Welcome to Revisor Scan report!\n\n"
-    summary = file_utils.read_file(filepath=summary_filepath)
-    if summary:
-        msg_body += "SUMMARY - \n\n"
-        msg_body += summary.decode().strip()
-        msg_body += "\n\n"
 
-    msg_body += "For detailed report, please refer the attached report files."
-    # detailed_report = file_utils.read_file(filepath=csv_filepath)
-    # if detailed_report:
-    #     msg_body += "DETAILS - \n\n"
-    #     msg_body += detailed_report.decode().strip()
-    #     msg_body += "\n\n"
+    msg_body = "Welcome to !Revisor\n\n"
+    msg_body += "Please refer the attached report files for Revisor Scan details!"
     msg_body += "\n\nThanks,\n Team !Revisor"
 
     sender_email = "<EMAIL>"
@@ -40,39 +28,52 @@ def send_scan_result_email(destination_email, summary_filepath, csv_filepath):
     # Add body to email
     message.attach(MIMEText(msg_body, "plain"))
 
-    # Add summary file as attachment
-    with open(summary_filepath, "rb") as attachment:
+    # Add VirusTotal Scan Report as attachment
+    with open(vt_scan_local, "rb") as attachment1:
         # Add file as application/octet-stream
-        part = MIMEBase("application", "octet-stream")
-        part.set_payload(attachment.read())
+        part1 = MIMEBase("application", "octet-stream")
+        part1.set_payload(attachment1.read())
 
     # Encode file in ASCII characters to send by email
-    encoders.encode_base64(part)
-
+    encoders.encode_base64(part1)
     # Add header as key/value pair to attachment part
-    part.add_header(
+    part1.add_header(
         "Content-Disposition",
-        f"attachment; filename= SUMMARY_REPORT.txt",
+        f"attachment; filename= VT_REPORT.csv",
     )
 
-    # Add csv file as attachment
-    with open(csv_filepath, "rb") as attachment2:
+    # Add YaraAV Scan Report as attachment
+    with open(yara_scan_local, "rb") as attachment2:
         # Add file as application/octet-stream
         part2 = MIMEBase("application", "octet-stream")
         part2.set_payload(attachment2.read())
 
     # Encode file in ASCII characters to send by email
     encoders.encode_base64(part2)
-
     # Add header as key/value pair to attachment part
     part2.add_header(
         "Content-Disposition",
-        f"attachment; filename= DETAILED_REPORT.csv",
+        f"attachment; filename= YARA_AV_KEYWORDS.txt",
     )
 
-    # Add attachment to message and convert message to string
-    message.attach(part)
+    # Add ClamAV report as attachment
+    with open(clamav_scan_local, "rb") as attachment3:
+        # Add file as application/octet-stream
+        part3 = MIMEBase("application", "octet-stream")
+        part3.set_payload(attachment3.read())
+
+    # Encode file in ASCII characters to send by email
+    encoders.encode_base64(part3)
+    # Add header as key/value pair to attachment part
+    part3.add_header(
+        "Content-Disposition",
+        f"attachment; filename= CLAMAV_AV_REPORT.json",
+    )
+
+    # Add attachments to message and convert message to string
+    message.attach(part1)
     message.attach(part2)
+    message.attach(part3)
     text = message.as_string()
 
     # Log in to server using secure context and send email
