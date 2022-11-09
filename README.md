@@ -1,7 +1,7 @@
 # Revisor
 Revisor - Backend APIs in Python Flask framework.
 
-## Contributors : 
+## Contributors
 - Abhiram Sarja
 - Namruth Reddy
 - Prateek Vutkur
