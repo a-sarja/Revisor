@@ -13,8 +13,10 @@ RUN apt-get update  -y \
     && apt-get install pip -y \
     && pip install -r yara_integration/requirements.txt
 
-RUN python3 yara_integration/yara_rules_download.py
+WORKDIR /opt/yara_service/yara_integration
 
-#TODO: need to create cronjob that updates the rules every 2 hours
+RUN python3 yara_rules_download.py
 
-CMD ["python3", "yara_integration/yara_python_script.py"]
+#TODO: create a cronjob that updates the rules every 2 hours
+
+CMD ["python3", "yara_python_script.py"]

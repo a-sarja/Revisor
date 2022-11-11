@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 curdir = os.getcwd()
 revisor_path = curdir.replace("/virus_total_integration", "")
 
@@ -15,8 +16,8 @@ aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
 
 
-if vt_api_key == '':
-    print("Enter a valid API key in the VT client file")
+if vt_api_key == '<api_key>':
+    print("Enter a valid API key in the config/virus_total folder")
     exit(0)
 
 while(1):
@@ -52,3 +53,4 @@ while(1):
     
     else:
         print("No unscanned files found")
+        time.sleep(60)
