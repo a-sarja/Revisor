@@ -11,4 +11,4 @@ for t in div.find_all('tr'):
     for span in t.find_all("span",class_ = "vendorname"):
              result.append((span.find("a").contents[0]).strip())
 
-print(result[:5])
+print(result[:10])
