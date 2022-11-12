@@ -1,0 +1,6 @@
+FROM httpd:latest
+
+LABEL maintainer="Prateek Vutkur"
+WORKDIR /revisor-frontend
+
+COPY frontend/ /usr/local/apache2/htdocs

@@ -17,7 +17,7 @@ form.addEventListener('submit', function(event) {
   payload.append('user_email', uploadEmail.value);
  
   // POST with Fetch API
-  fetch('http://localhost:5000/upload-file', {
+  fetch('http://192.168.86.31:5000/upload-file', {
     method: "POST", 
     body: payload, 
     // No content-type! With FormData object, Fetch API sets this automatically.
@@ -26,16 +26,16 @@ form.addEventListener('submit', function(event) {
   .then(res => {
     console.log(res.status)
     if(!res.ok){
-      alert("File Upload Failed. Please Try Again")
+      alert("File Upload Failed. Please Try Again - Not okay!")
     } else {
-      alert("File Upload Succesful!")
+      alert("File Upload Successful!")
       return res.json()
     }
   })
-
-  // .then(data => console.log(data))
+  .then(data => console.log(data))
   .catch(err => {
-    alert("File Upload Failed. Please Try Again")
+    console.log("Coming here..")
     console.log(err)
+    alert("File Upload Failed. Please Try Again")
   })
 });
