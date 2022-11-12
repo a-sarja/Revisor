@@ -23,10 +23,19 @@ form.addEventListener('submit', function(event) {
     // No content-type! With FormData object, Fetch API sets this automatically.
     header: "Access-Control-Allow-Origin: *",
   })
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => console.log(err))
+  .then(res => {
+    console.log(res.status)
+    if(!res.ok){
+      alert("File Upload Failed. Please Try Again")
+    } else {
+      alert("File Upload Succesful!")
+      return res.json()
+    }
+  })
+
+  // .then(data => console.log(data))
+  .catch(err => {
+    alert("File Upload Failed. Please Try Again")
+    console.log(err)
+  })
 });
-
-
-
