@@ -4,7 +4,12 @@ import time
 import csv
 import os
 
-vt_api_key = ''
+curdir = os.getcwd()
+revisor_path = curdir.replace("/virus_total_integration", "")
+
+sys.path.insert(0, revisor_path)
+
+from config.virus_total.config import vt_api_key
 
 class VirusTotalClient:
 
@@ -34,7 +39,8 @@ class VirusTotalClient:
             time.sleep(30)
             response = requests.get(url_report, headers=self.headers)
             response_dict = response.json()
-        file_name = file_name = os.path.basename(file_path)
+        
+        file_name = os.path.basename(file_path)
 
         with open(f"{file_name}/{file_name}_summary.txt", "w") as results_fp:    
             results_fp.write(str(response_dict['data']['attributes']['stats']))
