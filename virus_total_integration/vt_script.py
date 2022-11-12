@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 curdir = os.getcwd()
 revisor_path = curdir.replace("/virus_total_integration", "")
 
@@ -8,14 +9,15 @@ sys.path.insert(0, revisor_path)
 from backend.aws_s3_utils import *
 from backend.aws_dynamodb_utils import *
 from vt_client import *
+from backend.file_utils import *
 
 vt_api = VirusTotalClient()
 aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
 
 
-if vt_api_key == '':
-    print("Enter a valid API key in the VT client file")
+if vt_api_key == '<api_key>':
+    print("Enter a valid API key in the config/virus_total folder")
     exit(0)
 
 while(1):
@@ -37,6 +39,8 @@ while(1):
 
             aws_s3.download_file(f'{db_file_id}/{db_file_id}', f'{db_file_id}/{db_file_id}')
 
+            unzip_file(f'{db_file_id}', f'{db_file_id}/{db_file_id}', "CY7900")
+
             vt_file_id = vt_api.upload_file(f'{db_file_id}/{db_file_id}')
             print(vt_file_id)
 
@@ -49,3 +53,4 @@ while(1):
     
     else:
         print("No unscanned files found")
+        time.sleep(60)

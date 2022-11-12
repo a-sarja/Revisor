@@ -1,0 +1,22 @@
+FROM ubuntu
+
+RUN mkdir /opt/yara_service
+
+COPY . /opt/yara_service
+
+COPY config/aws /root/.aws
+
+WORKDIR /opt/yara_service
+
+RUN apt-get update  -y \
+    && apt-get install git -y \
+    && apt-get install pip -y \
+    && pip install -r yara_integration/requirements.txt
+
+WORKDIR /opt/yara_service/yara_integration
+
+RUN python3 yara_rules_download.py
+
+#TODO: create a cronjob that updates the rules every 2 hours
+
+CMD ["python3", "yara_python_script.py"]

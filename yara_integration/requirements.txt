@@ -1,0 +1,3 @@
+boto3
+yara-python
+pyminizip
