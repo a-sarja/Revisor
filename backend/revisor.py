@@ -1,4 +1,4 @@
-import json
+import multiprocessing
 import os
 from flask import Flask, request, jsonify
 import traceback
@@ -6,6 +6,7 @@ import traceback
 import file_utils
 from aws_dynamodb_utils import AwsDynamoDbClient
 from aws_s3_utils import AwsS3Client
+from scan_status_monitor import scan_status_monitor
 from utils import calculate_hash
 
 
@@ -58,7 +59,7 @@ def upload_file():
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
-            }), 200
+            }), 200, {"Access-Control-Allow-Origin": "*"}
 
         else:
             # File already scanned
@@ -66,7 +67,7 @@ def upload_file():
                 "code": 1004,
                 "message": "File already in the database",
                 "report": str(check_record['Item'])
-            }), 200
+            }), 200, {"Access-Control-Allow-Origin": "*"}
 
     except Exception as ex:
 
@@ -77,44 +78,13 @@ def upload_file():
         }), 400
 
 
-@app.route('/login', methods=['POST'])
-def login():
-    return jsonify({
-        "code": 1000,
-        "message": "Welcome to Revisor - The Next Generation AV Engine!"
-    }), 200
-
-
-@app.route('/register', methods=['POST'])
-def signup():
-
-    if request.method == "POST":
-        input_data = json.loads(request.get_data().decode().strip())
-
-        username = input_data['username']
-        first_name = input_data['firstName']
-        last_name = input_data['lastName']
-        email = input_data['email']
-        date_of_birth = input_data['dateOfBirth']
-
-        if not username or not first_name or not last_name or not email or not date_of_birth:
-            return jsonify({
-                "code": -1001,
-                "message": "Invalid inputs"
-            }), 400
-
-    return jsonify({
-        "code": 1000,
-        "message": "Welcome to Revisor - The Next Generation AV Engine!"
-    }), 200
-
-
+# Health check API
 @app.route('/', methods=['GET'])
 def test():
     return jsonify({
         "code": 1000,
         "message": "Welcome to Revisor - The Next Generation AV Engine!"
-    }), 200
+    }), 200, {"Access-Control-Allow-Origin": "*"}
 
 
 if __name__ == "__main__":
@@ -122,6 +92,10 @@ if __name__ == "__main__":
     # Create a temporary directory if not exists already
     if not os.path.exists(LOCAL_TEMP_FOLDER):
         os.mkdir(LOCAL_TEMP_FOLDER)
+
+    # Start the scan status monitoring process, and keep it running as a separate process parallely
+    scan_proc = multiprocessing.Process(target=scan_status_monitor)
+    scan_proc.start()
 
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)

@@ -28,7 +28,9 @@ def download_files(filepath, sha256, s3_obj):
     return vt_scan_local, yara_scan_local, clamav_scan_local
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+
+def scan_status_monitor():
 
     # Create a temporary directory if not exists already
     if not os.path.exists(LOCAL_TEMP_FOLDER):
