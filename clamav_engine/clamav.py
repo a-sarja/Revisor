@@ -18,7 +18,7 @@ class ClamAVEngine:
 
     def __init__(self):
         self.av_name = 'clamav'
-        self.host = 'http://<cra-container>:8080'
+        self.host = 'http://cra:8080'
         self.url = self.host + '/api/v1/scan'
         self.app_form_key = 'FILE'
 

@@ -1,6 +1,6 @@
 FROM httpd:latest
 
-LABEL maintainer="Prateek Vutkur"
+LABEL maintainer="Abhiram Sarja <sarja.a@northeastern.edu>"
 WORKDIR /revisor-frontend
 
 COPY frontend/ /usr/local/apache2/htdocs

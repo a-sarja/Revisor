@@ -15,27 +15,26 @@ form.addEventListener('submit', function(event) {
   const payload = new FormData();
   payload.append('user_file', f);
   payload.append('user_email', uploadEmail.value);
- 
-  // POST with Fetch API
-  fetch('http://192.168.86.31:5000/upload-file', {
-    method: "POST", 
-    body: payload, 
-    // No content-type! With FormData object, Fetch API sets this automatically.
-    header: "Access-Control-Allow-Origin: *",
-  })
-  .then(res => {
-    console.log(res.status)
-    if(!res.ok){
-      alert("File Upload Failed. Please Try Again - Not okay!")
-    } else {
-      alert("File Upload Successful!")
-      return res.json()
+
+  // Replace below URL with backend-container URL - http://localhost:5000/upload-file
+  fetch('http://3.22.233.61:5000/upload-file', {
+    method: "POST",
+    body: payload,
+    header: {
+        "Access-Control-Allow-Origin": "*"
     }
   })
-  .then(data => console.log(data))
-  .catch(err => {
-    console.log("Coming here..")
-    console.log(err)
-    alert("File Upload Failed. Please Try Again")
+  .then(function(response) {
+    console.log(response.text());
+    if(response.status === 200) {
+        alert("File Upload Successful! Keep watching your email inbox for scan reports..")
+    } else {
+        alert("File Upload Failed. Please Try Again!")
+    };
   })
+  .catch(function(error) {
+    console.log(error);
+    alert("Error in uploading the file. Please Try Again!");
+  })
+
 });
