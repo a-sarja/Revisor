@@ -85,4 +85,3 @@ while(1):
     else:
         print("No unscanned files found")
         time.sleep(60)
-        break
