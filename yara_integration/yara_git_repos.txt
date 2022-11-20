@@ -1,1 +1,6 @@
 https://github.com/mikesxrs/Open-Source-YARA-rules.git
+https://github.com/StrangerealIntel/DailyIOC.git
+https://github.com/Yara-Rules/rules.git
+https://github.com/Neo23x0/signature-base.git
+https://github.com/elastic/protections-artifacts.git
+https://github.com/mandiant/red_team_tool_countermeasures.git

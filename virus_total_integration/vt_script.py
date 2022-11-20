@@ -20,6 +20,11 @@ if vt_api_key == '<api_key>':
     print("Enter a valid API key in the config/virus_total folder")
     exit(0)
 
+if not os.path.exists("export.csv"):
+    print("----ERROR-----\n Download export.csv file from AV comparatives and place it in the virus_total_integration folder")
+    exit(0)
+
+
 while(1):
     scan_engine = "virustotal"
     unscanned_files = aws_ddb.get_unscanned_files(scan_engine=scan_engine)

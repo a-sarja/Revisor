@@ -3,6 +3,7 @@ import time
 import sys
 import os
 import pathlib
+import json
 curdir = os.getcwd()
 revisor_path = curdir.replace("/yara_integration", "")
 
@@ -16,21 +17,23 @@ aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
 
 
-rules_dir = "crowd_sourced_yara_rules"
+rules_dirs = ["crowd_sourced_yara_rules", "custom_yara_rules"]
 #inp_file = sys.argv[2] 
 
 def mycallback(data):
-    all_descriptions_list.append(data['meta']['description'])
+    if data['meta']:
+        matched_rules[data['rule']] = data['meta']
     return yara.CALLBACK_CONTINUE
 
 
 yara_files = []
 
-for path, currentDirectory, files in os.walk(rules_dir):
-    for file in files:
-        file_ext = pathlib.Path(os.path.join(path, file)).suffix
-        if file_ext == '.yar' or file_ext == '.yara':
-            yara_files.append(os.path.join(path, file))
+for rules_dir in rules_dirs:
+    for path, currentDirectory, files in os.walk(rules_dir):
+        for file in files:
+            file_ext = pathlib.Path(os.path.join(path, file)).suffix
+            if file_ext == '.yar' or file_ext == '.yara':
+                yara_files.append(os.path.join(path, file))
 
 
 
@@ -43,7 +46,7 @@ while(1):
         print(unscanned_files)
 
         for file in unscanned_files:
-            all_descriptions_list = []
+            matched_rules = {}
 
             db_file_id = file['id']
             #aws_ddb.update_yara_scan_status(db_file_id, 1)
@@ -71,10 +74,13 @@ while(1):
                     continue
 
 
-            all_descriptions = "\n".join(all_descriptions_list)
+            #all_descriptions = "\n".join(all_descriptions_list)
 
-            with open(f"{db_file_id}/{db_file_id}_yara_keywords.txt", "w") as results_fp:    
-                results_fp.write(all_descriptions)
+
+            with open(f"{db_file_id}/{db_file_id}_yara_keywords.txt", "w") as results_fp:
+                for rule in matched_rules:
+                    match_string = rule+ "   -->   " + json.dumps(matched_rules[rule]) + "\n"
+                    results_fp.write(match_string)
 
             aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_keywords.txt",f"{db_file_id}/{db_file_id}_yara_keywords.txt")
 
