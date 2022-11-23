@@ -1,6 +1,6 @@
 import os
 import sys
-import time
+
 curdir = os.getcwd()
 revisor_path = curdir.replace("/virus_total_integration", "")
 
@@ -16,16 +16,16 @@ aws_s3 = AwsS3Client()
 aws_ddb = AwsDynamoDbClient()
 
 
-if vt_api_key == '<api_key>':
+if not os.environ.get("VT_API_KEY"):
     print("Enter a valid API key in the config/virus_total folder")
     exit(0)
 
-if not os.path.exists("export.csv"):
+if not os.path.exists("virus_total_integration/export.csv"):
     print("----ERROR-----\n Download export.csv file from AV comparatives and place it in the virus_total_integration folder")
     exit(0)
 
 
-while(1):
+while 1:
     scan_engine = "virustotal"
     unscanned_files = aws_ddb.get_unscanned_files(scan_engine=scan_engine)
 
@@ -58,4 +58,4 @@ while(1):
     
     else:
         print("No unscanned files found")
-        time.sleep(60)
+        time.sleep(30)

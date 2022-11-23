@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile_backend
     ports:
       - "5000:5000"
+    environment:
+      REVISOR_EMAIL: "<EMAIL>"
+      REVISOR_EMAIL_PASSWORD: "<APP_PASSWORD>"  # Please enter the APP Password of the Google account
   frontend:
     container_name: rev_frontend
     hostname: frontend.revisor.project.com
@@ -22,6 +25,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_vt
+    environment:
+      VT_API_KEY: "<vt-api-Key>"
   yara:
     container_name: rev_yara
     hostname: yara.revisor.project.com
@@ -47,7 +52,7 @@ services:
       APP_FORM_KEY: FILE
       APP_MORGAN_LOG_FORMAT: combined
       APP_MAX_FILE_SIZE: 200214400  # Max size of ~200 MB
-      CLAMD_IP: 192.168.86.22  # IP Address of the host machine
+      CLAMD_IP: XXX.XXX.XXX.XXX  # IP Address of the host machine
       CLAMD_PORT: 3310
       CLAMD_TIMEOUT: 30000
   clamav:

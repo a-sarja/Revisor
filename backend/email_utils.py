@@ -1,3 +1,4 @@
+import os
 import smtplib
 import ssl
 from email import encoders
@@ -14,8 +15,12 @@ def send_scan_result_email(destination_email, vt_scan_local, yara_scan_local, cl
     msg_body += "Please refer the attached report files for Revisor Scan details!"
     msg_body += "\n\nThanks,\n Team !Revisor"
 
-    sender_email = "<EMAIL>"
-    password = "<APP_PASSWORD>"   # Keep your app password here in case of gmail - not the usual password
+    sender_email = os.environ.get("REVISOR_EMAIL")
+    password = os.environ.get("REVISOR_EMAIL_PASSWORD")
+    if not sender_email or not password:
+        print('ENV variables are empty. Unable to send reports via email')
+        return
+
     receiver_email = str(destination_email)
 
     # Create a multipart message and set headers
