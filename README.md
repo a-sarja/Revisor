@@ -17,7 +17,7 @@ Basic implementation of `multi file checker` AV engines. One can use this servic
 * Run below command to set up the docker images and run the containers
 
   ```
-  sudo docker compose up -d
+  sudo docker-compose up -d
   ```
 
 ### API Endpoints
