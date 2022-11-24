@@ -53,3 +53,10 @@ def unzip_file(folder, zip_filename, password):
     compress_level = 9
     return pyminizip.uncompress(folder + "/" + zip_filename, password, folder, compress_level)
 
+
+def calculate_filesize(filepath):
+
+    if not os.path.exists(filepath):
+        return False
+
+    return os.path.getsize(filename=filepath)

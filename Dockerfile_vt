@@ -13,7 +13,3 @@ RUN apt-get update  -y \
     && pip install -r virus_total_integration/requirements.txt
 
 CMD ["python3", "virus_total_integration/vt_script.py"]
-
-
-
-

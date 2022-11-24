@@ -1,5 +1,7 @@
 import multiprocessing
 import os
+import re
+
 from flask import Flask, request, jsonify
 import traceback
 
@@ -9,14 +11,12 @@ from aws_s3_utils import AwsS3Client
 from scan_status_monitor import scan_status_monitor
 from utils import calculate_hash
 
-
 app = Flask(__name__)
 LOCAL_TEMP_FOLDER = "upload_files/"
 
 
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
-
     if 'user_file' not in request.files:
         return jsonify({
             "code": -1004,
@@ -24,26 +24,41 @@ def upload_file():
         }), 400
 
     try:
-        ddb_client = AwsDynamoDbClient()
-        s3_client = AwsS3Client()
-
         file_to_uploaded = request.files['user_file']
         user_email = request.form.get('user_email')
         if not file_to_uploaded or not user_email:
             return jsonify({
                 'code': -1000,
                 'message': 'Invalid input!'
-            }), 400
+            }), 400, {"Access-Control-Allow-Origin": "*"}
+
+        regex_email = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+        if not re.search(regex_email, user_email):
+            return jsonify({
+                'code': -1002,
+                'message': 'Invalid email input!'
+            }), 400, {"Access-Control-Allow-Origin": "*"}
+
+        ddb_client = AwsDynamoDbClient()
+        s3_client = AwsS3Client()
 
         file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, file_to_uploaded.filename))
         file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
         sha256_digest = calculate_hash(file_path=file_path)
 
+        file_size = file_utils.calculate_filesize(filepath=file_path)
+        if not file_size or file_size > 31000000:
+            return jsonify({
+                'code': -1001,
+                'message': 'File size limit exceeded. (Files with size less than 32 MB are allowed for scanning)'
+            }), 400, {"Access-Control-Allow-Origin": "*"}
+
         # Rename the file to be uploaded to sha256 before uploading to S3
         file_path = LOCAL_TEMP_FOLDER + str(sha256_digest)
         os.rename(LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename), file_path)
 
-        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename), zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
+        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename),
+                                     zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
             file_path = LOCAL_TEMP_FOLDER + str(sha256_digest) + ".zip"
 
         # Check if the file is already uploaded
@@ -75,7 +90,7 @@ def upload_file():
         return jsonify({
             "code": -1000,
             "message": "Error in uploading the file!" + str(ex)
-        }), 400
+        }), 400, {"Access-Control-Allow-Origin": "*"}
 
 
 # Health check API
