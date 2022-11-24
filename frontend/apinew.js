@@ -2,14 +2,18 @@
 const form = document.getElementById('form1');
  
 form.addEventListener('submit', function(event) {
+
+  console.log("hiiiiiii")
   // Prevent default HTML page refresh
   event.preventDefault();
+  console.log("hiiiiiii")
  
   // Select file upload element
   const uploadElement = document.getElementById('file');
   const uploadEmail = document.getElementById('exampleInputEmail1');
   // Extract the file (for a single file, always 0 in the list)
   const f = uploadElement.files[0];
+if(ValidateEmail(uploadEmail)){
 
   // Create new formData object then append file
   const payload = new FormData();
@@ -36,5 +40,22 @@ form.addEventListener('submit', function(event) {
     console.log(error);
     alert("Error in uploading the file. Please Try Again!");
   })
-
+}
 });
+
+
+
+function ValidateEmail(inputText)
+{
+var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+if(inputText.value.match(mailformat))
+{
+return true;
+}
+else
+{
+alert("You have entered an invalid email address!");
+document.form1.text1.focus();
+return false;
+}
+}
