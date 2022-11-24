@@ -2,12 +2,8 @@
 const form = document.getElementById('form1');
  
 form.addEventListener('submit', function(event) {
-
-  console.log("hiiiiiii")
   // Prevent default HTML page refresh
   event.preventDefault();
-  console.log("hiiiiiii")
- 
   // Select file upload element
   const uploadElement = document.getElementById('file');
   const uploadEmail = document.getElementById('exampleInputEmail1');
