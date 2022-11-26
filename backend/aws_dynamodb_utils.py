@@ -8,7 +8,7 @@ class AwsDynamoDbClient:
 
     def __init__(self):
         self._aws_client = "dynamodb"
-        self._region = "us-east-1"
+        self._region = "us-east-2"
         self.ddb_object = self.get_dynamodb_client()
 
     def get_dynamodb_client(self):
