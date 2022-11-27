@@ -78,9 +78,7 @@ while(1):
 
 
             with open(f"{db_file_id}/{db_file_id}_yara_keywords.txt", "w") as results_fp:
-                for rule in matched_rules:
-                    match_string = rule+ "   -->   " + json.dumps(matched_rules[rule]) + "\n"
-                    results_fp.write(match_string)
+                results_fp.write(json.dumps(matched_rules))
 
             aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_keywords.txt",f"{db_file_id}/{db_file_id}_yara_keywords.txt")
 
