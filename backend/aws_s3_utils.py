@@ -5,7 +5,7 @@ class AwsS3Client:
 
     def __init__(self):
         self._aws_client = "s3"
-        self._bucket_name = "revisorfiles"
+        self._bucket_name = "revisorfiles-v2"
         self.s3_object = self.get_s3_client()
 
     def get_s3_client(self):
