@@ -1,7 +1,6 @@
 import multiprocessing
 import os
 import re
-
 from flask import Flask, request, jsonify
 import traceback
 
@@ -42,8 +41,9 @@ def upload_file():
         ddb_client = AwsDynamoDbClient()
         s3_client = AwsS3Client()
 
-        file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, file_to_uploaded.filename))
-        file_path = LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename)
+        uploaded_filename = str(file_to_uploaded.filename)
+        file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, uploaded_filename))
+        file_path = LOCAL_TEMP_FOLDER + uploaded_filename
         sha256_digest = calculate_hash(file_path=file_path)
 
         file_size = file_utils.calculate_filesize(filepath=file_path)
@@ -55,9 +55,9 @@ def upload_file():
 
         # Rename the file to be uploaded to sha256 before uploading to S3
         file_path = LOCAL_TEMP_FOLDER + str(sha256_digest)
-        os.rename(LOCAL_TEMP_FOLDER + str(file_to_uploaded.filename), file_path)
+        os.rename(LOCAL_TEMP_FOLDER + str(uploaded_filename), file_path)
 
-        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(file_to_uploaded.filename),
+        if file_utils.create_zipfile(folder=LOCAL_TEMP_FOLDER, source_filename=str(uploaded_filename),
                                      zip_filename=str(sha256_digest) + ".zip", password="CY7900"):
             file_path = LOCAL_TEMP_FOLDER + str(sha256_digest) + ".zip"
 
@@ -70,7 +70,7 @@ def upload_file():
             file_utils.delete_file(filepath=file_path)
 
             # Create/Update the revisor_files table on dynamodb
-            ddb_client.add_file(sha256=str(sha256_digest), user_email=user_email)
+            ddb_client.add_file(sha256=str(sha256_digest), user_email=user_email, filename=uploaded_filename)
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
@@ -96,6 +96,11 @@ def upload_file():
 # Health check API
 @app.route('/', methods=['GET'])
 def test():
+
+    # Start the scan status monitoring process, and keep it running as a separate process parallely
+    scan_proc = multiprocessing.Process(target=scan_status_monitor)
+    scan_proc.start()
+
     return jsonify({
         "code": 1000,
         "message": "Welcome to Revisor - The Next Generation AV Engine!"
@@ -107,10 +112,6 @@ if __name__ == "__main__":
     # Create a temporary directory if not exists already
     if not os.path.exists(LOCAL_TEMP_FOLDER):
         os.mkdir(LOCAL_TEMP_FOLDER)
-
-    # Start the scan status monitoring process, and keep it running as a separate process parallely
-    scan_proc = multiprocessing.Process(target=scan_status_monitor)
-    scan_proc.start()
 
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
     app.run(debug=True, host='0.0.0.0', port=port)

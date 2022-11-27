@@ -14,17 +14,18 @@ class AwsDynamoDbClient:
     def get_dynamodb_client(self):
         return boto3.resource(self._aws_client, self._region)
 
-    def add_file(self, sha256, user_email):
+    def add_file(self, sha256, user_email, filename):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.put_item(
             Item={
                 'id': sha256,
+                'file_name': filename,
                 'uploaded_timestamp': str(datetime.datetime.now()),
                 'scan_status': 0,
                 'clamav_scan_status': 0,
                 'yara_av_scan_status': 0,
                 'uploaded_by': str(user_email),
-                'scan_completed_timestamp': None,
+                # 'scan_completed_timestamp': None,
                 'email_status': 0
             }
         )
@@ -35,20 +36,8 @@ class AwsDynamoDbClient:
             Key={
                 'id': str(sha256)
             }, AttributesToGet=[
-                'uploaded_timestamp', 'scan_completed_timestamp', 'uploaded_by'
+                'uploaded_timestamp', 'uploaded_by'
             ]
-        )
-
-    def signup_user(self, username, first_name, last_name, email, date_of_birth):
-        users_table = self.ddb_object.Table('users')
-        return users_table.put_item(
-            Item={
-                'username': username,
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email,
-                'date_of_birth': date_of_birth
-            }
         )
 
     def fetch_data_to_send_email(self):
@@ -59,7 +48,7 @@ class AwsDynamoDbClient:
         if response:
             return response['Items']
 
-    def update_email_status(self, sha256):
+    def update_email_status(self, sha256, email_status):
         user_files_table = self.ddb_object.Table('revisor_files')
         return user_files_table.update_item(
             Key={
@@ -67,7 +56,7 @@ class AwsDynamoDbClient:
             },
             UpdateExpression="SET email_status=:e",
             ExpressionAttributeValues={
-                ':e': 2
+                ':e': email_status
             },
             ReturnValues="UPDATED_NEW"
         )
