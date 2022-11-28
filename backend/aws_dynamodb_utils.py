@@ -25,7 +25,6 @@ class AwsDynamoDbClient:
                 'clamav_scan_status': 0,
                 'yara_av_scan_status': 0,
                 'uploaded_by': str(user_email),
-                # 'scan_completed_timestamp': None,
                 'email_status': 0
             }
         )
@@ -57,6 +56,19 @@ class AwsDynamoDbClient:
             UpdateExpression="SET email_status=:e",
             ExpressionAttributeValues={
                 ':e': email_status
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+
+    def update_email_info(self, sha256, email_id):
+        user_files_table = self.ddb_object.Table('revisor_files')
+        return user_files_table.update_item(
+            Key={
+                'id': sha256
+            },
+            UpdateExpression="SET uploaded_by=:e",
+            ExpressionAttributeValues={
+                ':e': email_id
             },
             ReturnValues="UPDATED_NEW"
         )

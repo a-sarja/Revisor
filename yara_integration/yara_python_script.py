@@ -18,7 +18,7 @@ aws_ddb = AwsDynamoDbClient()
 
 
 rules_dirs = ["crowd_sourced_yara_rules", "custom_yara_rules"]
-#inp_file = sys.argv[2] 
+
 
 def mycallback(data):
     if data['meta']:
@@ -35,12 +35,9 @@ for rules_dir in rules_dirs:
             if file_ext == '.yar' or file_ext == '.yara':
                 yara_files.append(os.path.join(path, file))
 
+while True:
 
-
-while(1):
-    #unscanned_files = aws_ddb.get_unscanned_yara_files()
     unscanned_files = aws_ddb.get_unscanned_files('yara_av')
-    
 
     if unscanned_files:
         print(unscanned_files)
@@ -49,7 +46,6 @@ while(1):
             matched_rules = {}
 
             db_file_id = file['id']
-            #aws_ddb.update_yara_scan_status(db_file_id, 1)
             aws_ddb.update_scan_status(db_file_id, 1, 'yara_av')
 
             pwd = os.getcwd()
@@ -63,8 +59,6 @@ while(1):
 
             unzip_file(f'{db_file_id}', f'{db_file_id}/{db_file_id}', "CY7900")
 
-            #delete_file(f'{db_file_id}/{db_file_id}')
-
             for rule_file in yara_files:
                 try:
                     rules = yara.compile(rule_file)
@@ -73,19 +67,13 @@ while(1):
                 except:
                     continue
 
+            with open(f"{db_file_id}/{db_file_id}_yara_report.json", "w") as results_fp:
+                results_fp.write(json.dumps(matched_rules, indent=4))
 
-            #all_descriptions = "\n".join(all_descriptions_list)
+            aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_report.json", f"{db_file_id}/{db_file_id}_yara_report.json")
 
-
-            with open(f"{db_file_id}/{db_file_id}_yara_keywords.txt", "w") as results_fp:
-                results_fp.write(json.dumps(matched_rules))
-
-            aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_keywords.txt",f"{db_file_id}/{db_file_id}_yara_keywords.txt")
-
-            #aws_ddb.update_yara_scan_status(db_file_id, 2)
             aws_ddb.update_scan_status(db_file_id, 2, 'yara_av')
 
-    
     else:
         print("No unscanned files found")
         time.sleep(60)

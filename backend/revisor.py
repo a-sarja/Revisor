@@ -78,6 +78,16 @@ def upload_file():
 
         else:
             # File already scanned
+            # Delete it from local
+            file_utils.delete_file(filepath=file_path)
+
+            # Update the database
+            if user_email and sha256_digest:
+                ddb_client.update_email_status(sha256=sha256_digest, email_status=0)
+                ddb_client.update_email_info(sha256=sha256_digest, email_id=user_email)
+            else:
+                raise Exception("Some error in processing - code: -1009")
+
             return jsonify({
                 "code": 1004,
                 "message": "File already in the database",
