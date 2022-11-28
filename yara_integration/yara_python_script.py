@@ -77,10 +77,10 @@ while(1):
             #all_descriptions = "\n".join(all_descriptions_list)
 
 
-            with open(f"{db_file_id}/{db_file_id}_yara_keywords.txt", "w") as results_fp:
-                results_fp.write(json.dumps(matched_rules))
+            with open(f"{db_file_id}/{db_file_id}_yara_report.json", "w") as results_fp:
+                results_fp.write(json.dumps(matched_rules, indent=4))
 
-            aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_keywords.txt",f"{db_file_id}/{db_file_id}_yara_keywords.txt")
+            aws_s3.upload_file(f"{db_file_id}/{db_file_id}_yara_report.json",f"{db_file_id}/{db_file_id}_yara_report.json")
 
             #aws_ddb.update_yara_scan_status(db_file_id, 2)
             aws_ddb.update_scan_status(db_file_id, 2, 'yara_av')
