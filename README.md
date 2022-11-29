@@ -24,20 +24,16 @@ Implementation of `multi file checker` AV engines. Revisor would enable users to
 ### Flowchart
 The below flowchart describes our Revisor application comprising Frontend, Backend and Cloud services components.
 
-<img width="400" alt="flowchart" src="https://user-images.githubusercontent.com/100332027/204435414-130220af-afd4-4617-a877-5072c8980012.PNG">
+<img width="400" alt="flownew" src="https://user-images.githubusercontent.com/100332027/204668945-3ce71a0d-b2e6-4061-aba0-132ae52a094d.PNG">
 
 ### Results
 UI
 
-<img width="600" alt="UI" src="https://user-images.githubusercontent.com/100332027/204435532-67f90f69-fad0-413d-8886-3d2ac7c7460e.PNG">
-
-DynamodB 
-
-<img width="600" alt="dbnew" src="https://user-images.githubusercontent.com/100332027/204437077-792a140f-4a41-416d-8a52-02f2875bef87.PNG">
+<img width="400" alt="UI" src="https://user-images.githubusercontent.com/100332027/204435532-67f90f69-fad0-413d-8886-3d2ac7c7460e.PNG">
 
 Report sent to User email
 
-<img width="600" alt="email" src="https://user-images.githubusercontent.com/100332027/204435588-29f1bcdc-3fbd-489f-a9a7-18d6598b739c.PNG">
+<img width="400" alt="report 101" src="https://user-images.githubusercontent.com/100332027/204668861-757ef2ea-4453-45d6-ad14-48682bea7c15.PNG">
 
 
 ### API Endpoints
