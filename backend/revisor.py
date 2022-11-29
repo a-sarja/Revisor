@@ -116,10 +116,11 @@ def test():
     scan_proc = multiprocessing.Process(target=scan_status_monitor)
     scan_proc.start()
 
+    origin = request.headers.get('Origin', '*')
     return jsonify({
         "code": 1000,
         "message": "Welcome to Revisor - The Next Generation AV Engine!"
-    }), 200, {"Access-Control-Allow-Origin": "*"}
+    }), 200, {"Access-Control-Allow-Origin": origin}
 
 
 if __name__ == "__main__":
