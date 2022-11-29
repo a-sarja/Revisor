@@ -45,8 +45,8 @@ def upload_file():
         ddb_client = AwsDynamoDbClient()
         s3_client = AwsS3Client()
 
-        uploaded_filename = secure_filename(file_to_uploaded.filename)
-        # uploaded_filename = str(file_to_uploaded.filename)
+        # uploaded_filename = secure_filename(file_to_uploaded.filename)
+        uploaded_filename = str(file_to_uploaded.filename)
         file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, uploaded_filename))
         file_path = LOCAL_TEMP_FOLDER + uploaded_filename
         sha256_digest = calculate_hash(file_path=file_path)
