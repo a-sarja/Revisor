@@ -1,6 +1,13 @@
 FROM httpd:latest
 
-LABEL maintainer="Abhiram Sarja <sarja.a@northeastern.edu>"
 WORKDIR /revisor-frontend
 
 COPY frontend/ /usr/local/apache2/htdocs
+#COPY server.key /usr/local/apache2/conf/server.key
+#COPY server.crt /usr/local/apache2/conf/server.crt
+
+RUN sed -i \
+		-e 's/^#\(Include .*httpd-ssl.conf\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
+		-e 's/^#\(LoadModule .*mod_socache_shmcb.so\)/\1/' \
+		/usr/local/apache2/conf/httpd.conf
