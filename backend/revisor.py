@@ -4,6 +4,8 @@ import re
 from flask import Flask, request, jsonify
 import traceback
 
+from werkzeug.utils import secure_filename
+
 import file_utils
 from aws_dynamodb_utils import AwsDynamoDbClient
 from aws_s3_utils import AwsS3Client
@@ -16,32 +18,35 @@ LOCAL_TEMP_FOLDER = "upload_files/"
 
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
-    if 'user_file' not in request.files:
-        return jsonify({
-            "code": -1004,
-            "message": "File not present in the user request!"
-        }), 400
 
+    origin = request.headers.get('Origin', '*')
     try:
+        if 'user_file' not in request.files:
+            return jsonify({
+                "code": -1004,
+                "message": "File not present in the user request!"
+            }), 400, {"Access-Control-Allow-Origin": origin}
+
         file_to_uploaded = request.files['user_file']
         user_email = request.form.get('user_email')
         if not file_to_uploaded or not user_email:
             return jsonify({
                 'code': -1000,
                 'message': 'Invalid input!'
-            }), 400, {"Access-Control-Allow-Origin": "*"}
+            }), 400, {"Access-Control-Allow-Origin": origin}
 
         regex_email = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
         if not re.search(regex_email, user_email):
             return jsonify({
                 'code': -1002,
                 'message': 'Invalid email input!'
-            }), 400, {"Access-Control-Allow-Origin": "*"}
+            }), 400, {"Access-Control-Allow-Origin": origin}
 
         ddb_client = AwsDynamoDbClient()
         s3_client = AwsS3Client()
 
-        uploaded_filename = str(file_to_uploaded.filename)
+        uploaded_filename = secure_filename(file_to_uploaded.filename)
+        # uploaded_filename = str(file_to_uploaded.filename)
         file_to_uploaded.save(os.path.join(LOCAL_TEMP_FOLDER, uploaded_filename))
         file_path = LOCAL_TEMP_FOLDER + uploaded_filename
         sha256_digest = calculate_hash(file_path=file_path)
@@ -51,7 +56,7 @@ def upload_file():
             return jsonify({
                 'code': -1001,
                 'message': 'File size limit exceeded. (Files with size less than 32 MB are allowed for scanning)'
-            }), 400, {"Access-Control-Allow-Origin": "*"}
+            }), 400, {"Access-Control-Allow-Origin": origin}
 
         # Rename the file to be uploaded to sha256 before uploading to S3
         file_path = LOCAL_TEMP_FOLDER + str(sha256_digest)
@@ -74,7 +79,7 @@ def upload_file():
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
-            }), 200, {"Access-Control-Allow-Origin": "*"}
+            }), 200, {"Access-Control-Allow-Origin": origin}
 
         else:
             # File already scanned
@@ -92,7 +97,7 @@ def upload_file():
                 "code": 1004,
                 "message": "File already in the database",
                 "report": str(check_record['Item'])
-            }), 200, {"Access-Control-Allow-Origin": "*"}
+            }), 200, {"Access-Control-Allow-Origin": origin}
 
     except Exception as ex:
 
@@ -100,7 +105,7 @@ def upload_file():
         return jsonify({
             "code": -1000,
             "message": "Error in uploading the file!" + str(ex)
-        }), 400, {"Access-Control-Allow-Origin": "*"}
+        }), 400, {"Access-Control-Allow-Origin": origin}
 
 
 # Health check API
@@ -124,4 +129,4 @@ if __name__ == "__main__":
         os.mkdir(LOCAL_TEMP_FOLDER)
 
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)
