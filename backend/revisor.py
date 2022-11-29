@@ -19,13 +19,13 @@ LOCAL_TEMP_FOLDER = "upload_files/"
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
 
-    origin = request.headers.get('Origin', '*')
+    # origin = request.headers.get('Origin', '*')
     try:
         if 'user_file' not in request.files:
             return jsonify({
                 "code": -1004,
                 "message": "File not present in the user request!"
-            }), 400, {"Access-Control-Allow-Origin": origin}
+            }), 400, {"Access-Control-Allow-Origin": '*'}
 
         file_to_uploaded = request.files['user_file']
         user_email = request.form.get('user_email')
@@ -33,14 +33,14 @@ def upload_file():
             return jsonify({
                 'code': -1000,
                 'message': 'Invalid input!'
-            }), 400, {"Access-Control-Allow-Origin": origin}
+            }), 400, {"Access-Control-Allow-Origin": '*'}
 
         regex_email = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
         if not re.search(regex_email, user_email):
             return jsonify({
                 'code': -1002,
                 'message': 'Invalid email input!'
-            }), 400, {"Access-Control-Allow-Origin": origin}
+            }), 400, {"Access-Control-Allow-Origin": '*'}
 
         ddb_client = AwsDynamoDbClient()
         s3_client = AwsS3Client()
@@ -56,7 +56,7 @@ def upload_file():
             return jsonify({
                 'code': -1001,
                 'message': 'File size limit exceeded. (Files with size less than 32 MB are allowed for scanning)'
-            }), 400, {"Access-Control-Allow-Origin": origin}
+            }), 400, {"Access-Control-Allow-Origin": '*'}
 
         # Rename the file to be uploaded to sha256 before uploading to S3
         file_path = LOCAL_TEMP_FOLDER + str(sha256_digest)
@@ -79,7 +79,7 @@ def upload_file():
             return jsonify({
                 "code": 1004,
                 "message": "File is successfully uploaded and sent for scanning"
-            }), 200, {"Access-Control-Allow-Origin": origin}
+            }), 200, {"Access-Control-Allow-Origin": '*'}
 
         else:
             # File already scanned
@@ -97,7 +97,7 @@ def upload_file():
                 "code": 1004,
                 "message": "File already in the database",
                 "report": str(check_record['Item'])
-            }), 200, {"Access-Control-Allow-Origin": origin}
+            }), 200, {"Access-Control-Allow-Origin": '*'}
 
     except Exception as ex:
 
@@ -105,7 +105,7 @@ def upload_file():
         return jsonify({
             "code": -1000,
             "message": "Error in uploading the file!" + str(ex)
-        }), 400, {"Access-Control-Allow-Origin": origin}
+        }), 400, {"Access-Control-Allow-Origin": '*'}
 
 
 # Health check API
@@ -116,11 +116,11 @@ def test():
     scan_proc = multiprocessing.Process(target=scan_status_monitor)
     scan_proc.start()
 
-    origin = request.headers.get('Origin', '*')
+    # origin = request.headers.get('Origin', '*')
     return jsonify({
         "code": 1000,
         "message": "Welcome to Revisor - The Next Generation AV Engine!"
-    }), 200, {"Access-Control-Allow-Origin": origin}
+    }), 200, {"Access-Control-Allow-Origin": '*'}
 
 
 if __name__ == "__main__":
@@ -130,4 +130,4 @@ if __name__ == "__main__":
         os.mkdir(LOCAL_TEMP_FOLDER)
 
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
