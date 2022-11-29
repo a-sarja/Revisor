@@ -1,5 +1,6 @@
 # Revisor
-Basic implementation of `multi file checker` AV engines. One can use this service to scan ANY type of files for maliciousness.
+### Motivation
+Implementation of `multi file checker` AV engines. Revisor would enable users to collate the information from independent analysis of 3 AV engines which can generate a elaborate analysis report containing corroborative information on the malicious nature of the input file, thereby offering more information to the user about the input file.
 
 ### Tech Stack
   * **Front End:** HTML5, CSS3, Java Script
@@ -20,11 +21,35 @@ Basic implementation of `multi file checker` AV engines. One can use this servic
   sudo docker-compose up -d
   ```
 
+### Flowchart
+The below flowchart describes our Revisor application comprising Frontend, Backend and Cloud services components.
+
+<img width="400" alt="flowchart" src="https://user-images.githubusercontent.com/100332027/204435414-130220af-afd4-4617-a877-5072c8980012.PNG">
+
+### Results
+UI
+
+<img width="600" alt="UI" src="https://user-images.githubusercontent.com/100332027/204435532-67f90f69-fad0-413d-8886-3d2ac7c7460e.PNG">
+
+DynamodB 
+
+<img width="600" alt="dbnew" src="https://user-images.githubusercontent.com/100332027/204437077-792a140f-4a41-416d-8a52-02f2875bef87.PNG">
+
+Report sent to User email
+
+<img width="600" alt="email" src="https://user-images.githubusercontent.com/100332027/204435588-29f1bcdc-3fbd-489f-a9a7-18d6598b739c.PNG">
+
+
 ### API Endpoints
 There are a couple of APIs exposed as part of the project
   * `GET <host>:80/` - browse home page on the browser
   * `GET <host>:5000/` - Health check API
   * `POST <host>:5000/upload_file` - Upload file for scanning
+
+### Limitations
+  * The input file size is limited to 32mb
+  * False positives in malware identification are a frequent drawback of malware scanning software
+
 
 ### Contributors
   - [Abhiram Sarja](https://www.linkedin.com/in/asarja)
