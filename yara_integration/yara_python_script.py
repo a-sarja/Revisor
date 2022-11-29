@@ -21,7 +21,7 @@ rules_dirs = ["crowd_sourced_yara_rules", "custom_yara_rules"]
 
 
 def mycallback(data):
-    if data['meta']:
+    if data['meta'] and len(data['meta']) >=3 :
         matched_rules[data['rule']] = data['meta']
     return yara.CALLBACK_CONTINUE
 
