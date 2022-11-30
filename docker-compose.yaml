@@ -9,6 +9,8 @@ services:
     ports:
       - "5000:5000"
     environment:
+      CERT_PEM: "config/certs/backend/cert.pem"
+      SERVER_PEM: "config/certs/backend/server.pem"   # Keep the certificates (.PEM) inside <config/certs/backend/> folder
       REVISOR_EMAIL: "<EMAIL>"
       REVISOR_EMAIL_PASSWORD: "<APP_PASSWORD>"  # Please enter the APP Password of the Google account
   frontend:

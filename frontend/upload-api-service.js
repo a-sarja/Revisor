@@ -17,7 +17,7 @@ form.addEventListener('submit', function (event) {
         payload.append('user_email', uploadEmail.value);
 
         // Replace below URL with backend-container URL - http://localhost:5000/upload-file
-        fetch('http://localhost:5000/upload-file', {
+        fetch('https://127.0.0.1:5000/upload-file', {
           method: "POST",
           body: payload,
           header: {
