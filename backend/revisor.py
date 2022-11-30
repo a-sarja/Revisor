@@ -3,14 +3,13 @@ import os
 import re
 from flask import Flask, request, jsonify
 import traceback
-
 from werkzeug.utils import secure_filename
-
 import file_utils
 from aws_dynamodb_utils import AwsDynamoDbClient
 from aws_s3_utils import AwsS3Client
 from scan_status_monitor import scan_status_monitor
 from utils import calculate_hash
+
 
 app = Flask(__name__)
 LOCAL_TEMP_FOLDER = "upload_files/"
@@ -129,5 +128,12 @@ if __name__ == "__main__":
     if not os.path.exists(LOCAL_TEMP_FOLDER):
         os.mkdir(LOCAL_TEMP_FOLDER)
 
+    cert_pem = os.getenv('CERT_PEM')
+    server_pem = os.getenv('SERVER_PEM')
+    if not cert_pem or not server_pem:
+        print('Certificates are not found! Exiting!')
+        exit(1)
+
+    context = (cert_pem, server_pem)
     port = int(os.environ.get('REVISOR_SERVER_PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port, ssl_context=context)
