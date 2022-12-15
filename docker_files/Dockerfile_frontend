@@ -2,9 +2,9 @@ FROM httpd:latest
 
 WORKDIR /revisor-frontend
 
-COPY frontend/ /usr/local/apache2/htdocs
-COPY config/certs/frontend/server.key /usr/local/apache2/conf/server.key
-COPY config/certs/frontend/server.crt /usr/local/apache2/conf/server.crt
+COPY ../frontend/ /usr/local/apache2/htdocs
+COPY ../config/certs/frontend/server.key /usr/local/apache2/conf/server.key
+COPY ../config/certs/frontend/server.crt /usr/local/apache2/conf/server.crt
 
 RUN sed -i \
 		-e 's/^#\(Include .*httpd-ssl.conf\)/\1/' \

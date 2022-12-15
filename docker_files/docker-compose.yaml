@@ -4,21 +4,21 @@ services:
     container_name: rev_backend
     hostname: backend.revisor.project.com
     build:
-      context: .
-      dockerfile: Dockerfile_backend
+      context: ../
+      dockerfile: ./docker_files/Dockerfile_backend
     ports:
       - "5000:5000"
     environment:
-      CERT_PEM: "config/certs/backend/cert.pem"
-      SERVER_PEM: "config/certs/backend/server.pem"   # Keep the certificates (.PEM) inside <config/certs/backend/> folder
+      CERT_PEM: "../config/certs/backend/cert.pem"
+      SERVER_PEM: "../config/certs/backend/server.pem"   # Keep the certificates (.PEM) inside <config/certs/backend/> folder
       REVISOR_EMAIL: "<EMAIL>"
       REVISOR_EMAIL_PASSWORD: "<APP_PASSWORD>"  # Please enter the APP Password of the Google account
   frontend:
     container_name: rev_frontend
     hostname: frontend.revisor.project.com
     build:
-      context: .
-      dockerfile: Dockerfile_frontend
+      context: ../
+      dockerfile: ./docker_files/Dockerfile_frontend
     ports:
       - "80:80"
       - "443:443"
@@ -26,16 +26,16 @@ services:
     container_name: rev_virustotal
     hostname: virustotal.revisor.project.com
     build:
-      context: .
-      dockerfile: Dockerfile_vt
+      context: ../
+      dockerfile: ./docker_files/Dockerfile_vt
     environment:
       VT_API_KEY: "<vt-api-Key>"
   yara:
     container_name: rev_yara
     hostname: yara.revisor.project.com
     build:
-      context: .
-      dockerfile: Dockerfile_yara
+      context: ../
+      dockerfile: ./docker_files/Dockerfile_yara
   clamavdaemon: # ClamAV official docker image
     image: clamav/clamav:0.105.1-1
     container_name: clamavd
@@ -62,8 +62,8 @@ services:
     container_name: rev_clamav
     hostname: clamav.revisor.project.com
     build:
-      context: .
-      dockerfile: Dockerfile_clamav
+      context: ../
+      dockerfile: ./docker_files/Dockerfile_clamav
     ports:
       - "8081:8081"
     links:
