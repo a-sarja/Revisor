@@ -2,9 +2,9 @@ FROM ubuntu
 
 RUN mkdir /opt/yara_service
 
-COPY . /opt/yara_service
+COPY ../ /opt/yara_service
 
-COPY config/aws /root/.aws
+COPY ../config/aws /root/.aws
 
 WORKDIR /opt/yara_service
 

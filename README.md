@@ -1,16 +1,23 @@
-# Revisor
+# Revisor - Multi AV file analyzer (Student project)
 ### Motivation
-Implementation of `multi file checker` AV engines. Revisor would enable users to collate the information from independent analysis of 3 AV engines which can generate a elaborate analysis report containing corroborative information on the malicious nature of the input file, thereby offering more information to the user about the input file.
+  * Rising amount of total malware and Potentially Unwanted Applications (PUA).
+  * Multi AV file analyzer for better accuracy and efficiency.
+  * Ease of use and deployment. Platform agnostic property.
+  * Open source resources (Cost effective).
+  * API support and building automation.
 
 ### Tech Stack
   * **Front End:** HTML5, CSS3, Java Script
-  * **Backend:** Python Flask, AWS, DynamoDB, AWS S3
-  * **AV Engines:** Virus Total, Clam AV, and customised YARA rules to check malware
+  * **Backend:** Python, Flask, AWS - DynamoDB and S3, AV components - Virus Total, Clam AV and crowd sourced Yara rules.
 
 ### Set Up
-
-* Replace the AWS credentials in `config/aws/credentials` with appropriate values
-* Update the below _ENVIRONMENT_ variables in `docker-compose.yaml`:
+* Download the source code onto your machine or any cloud instance.
+* Install Docker.
+* Replace the AWS credentials in `config/aws/credentials` with your AWS keys. (To access S3 and DynamoDB services).
+* Replace the certificates in `config/backend/certs` with your certificate key pair. (To encrypt the communication between frontend and backend through HTTPS)
+* Create new or use an existing email ID that can be used for sending reports. _REVISOR_EMAIL_
+* Generate a virus total API key. VT_API_KEY
+* Update the below _ENVIRONMENT_ variables in `docker_files/docker-compose.yaml`:
   * _REVISOR_EMAIL_
   * _REVISOR_EMAIL_PASSWORD_
   * _VT_API_KEY_
@@ -21,36 +28,35 @@ Implementation of `multi file checker` AV engines. Revisor would enable users to
   sudo docker-compose up -d
   ```
 
-### Flowchart
-The below flowchart describes our Revisor application comprising Frontend, Backend and Cloud services components.
+### Architecture
+High level architecture of the project is shown below:
 
-<img width="400" alt="flownew" src="https://user-images.githubusercontent.com/100332027/204668945-3ce71a0d-b2e6-4061-aba0-132ae52a094d.PNG">
+![Arch](/Images/arch.png?raw=True "Architecture")
 
-### Results
-UI
+### Product screenshots
+Front end website/UI to upload the file to be analyzed
 
-<img width="400" alt="UI" src="https://user-images.githubusercontent.com/100332027/204435532-67f90f69-fad0-413d-8886-3d2ac7c7460e.PNG">
+![front_end](/Images/front-end.png?raw=True "FrontEnd-UI")
 
-Report sent to User email
+File anayzer report is sent in the form of email. Reports include the summary PDF report and additional files for more context.
 
-<img width="400" alt="report 101" src="https://user-images.githubusercontent.com/100332027/204668861-757ef2ea-4453-45d6-ad14-48682bea7c15.PNG">
-
+![report](/Images/report.png?raw=True "Report")
 
 ### API Endpoints
-There are a couple of APIs exposed as part of the project
-  * `GET <host>:80/` - browse home page on the browser
+APIs exposed as part of the project and can be used after the deployment is sucessful
+  * `GET <host>:443/` - browse home page on the browser
   * `GET <host>:5000/` - Health check API
   * `POST <host>:5000/upload_file` - Upload file for scanning
 
-### Limitations
-  * The input file size is limited to 32mb
-  * False positives in malware identification are a frequent drawback of malware scanning software
 
-
-### Contributors
+### Contributors (LinkedIn) 
   - [Abhiram Sarja](https://www.linkedin.com/in/asarja)
   - [Namruth Reddy](https://www.linkedin.com/in/namruth-reddy/)
   - [Prateek Vutkur](https://www.linkedin.com/in/prateek-vutkur/)
   - [Alekhya Digumarthy](https://www.linkedin.com/in/alekhya-digumarthy/)
 
 
+### Disclaimer
+This is a student project (POC) and is not meant for use in production.
+
+Please contact [Abhiram](abhiramsarja@gmail.com) or [Namruth](namruth@outlook.com) for more details

@@ -4,11 +4,11 @@ LABEL maintainer="Abhiram Sarja <sarja.a@northeastern.edu>"
 WORKDIR /revisor-clamav
 
 # Copy Revisor backend code and related utility files into the image/container
-COPY backend/ ./backend/
-COPY clamav_engine/ ./clamav_engine/
+COPY ../backend/ ./backend/
+COPY ../clamav_engine/ ./clamav_engine/
 
 # Copy the AWS credential files into the image/container
-COPY config/aws /root/.aws
+COPY ../config/aws /root/.aws
 
 USER root
 

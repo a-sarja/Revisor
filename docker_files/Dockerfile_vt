@@ -2,9 +2,9 @@ FROM ubuntu
 
 RUN mkdir /opt/vt_service
 
-COPY . /opt/vt_service
+COPY ../ /opt/vt_service
 
-COPY config/aws /root/.aws
+COPY ../config/aws /root/.aws
 
 WORKDIR /opt/vt_service
 
