@@ -3,3 +3,4 @@ Flask~=2.2.2
 pyminizip~=0.2.6
 requests~=2.28.1
 reportlab~=3.6.8
+werkzeug>=3.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
