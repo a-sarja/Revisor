@@ -1,5 +1,7 @@
 boto3~=1.24.89
 Flask~=2.2.2
 pyminizip~=0.2.6
-requests~=2.28.1
+requests~=2.31.0
 reportlab~=3.6.8
+pillow>=10.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
+werkzeug>=2.3.8 # not directly required, pinned by Snyk to avoid a vulnerability
