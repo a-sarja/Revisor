@@ -1,4 +1,4 @@
-# Revisor - Multi AV file analyzer (Student project)
+# Revisor - Multi AV file analyzer
 ### Motivation
   * Rising amount of total malware and Potentially Unwanted Applications (PUA).
   * Multi AV file analyzer for better accuracy and efficiency.
