@@ -2,3 +2,4 @@ boto3
 pyminizip
 requests
 pandas
+urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability
